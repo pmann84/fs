@@ -40,7 +40,7 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
-   - uses: actions/upload-artifact@v2
-   with:
-     name: windows-binaries
-     path: ${{runner.workspace}}/build/Release/fspp.exe
+    - uses: actions/upload-artifact@v2
+      with:
+       name: windows-binaries
+       path: ${{runner.workspace}}/build/Release/fspp.exe
