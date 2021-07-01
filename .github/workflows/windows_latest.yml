@@ -42,3 +42,4 @@ jobs:
       with:
        name: windows-binaries
        path: ${{runner.workspace}}/build/Release/fs.exe
+       if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
