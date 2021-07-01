@@ -1,4 +1,4 @@
-name: Windows Binaries
+name: Latest Binaries - Windows
 
 on: [push]
 
@@ -40,6 +40,6 @@ jobs:
       run: cmake --build . --config $BUILD_TYPE
     - uses: actions/upload-artifact@v2
       with:
-       name: windows-binaries
+       name: windows-binaries-latest
        path: ${{runner.workspace}}/build/Release/fs.exe
        if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
