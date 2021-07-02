@@ -27,7 +27,8 @@ jobs:
     - name: Set Release env
       id: relver
       run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-          
+      shell: bash
+      
     - name: Check Release Version
       run: echo ${{ steps.relver.outputs.tag }}
       shell: bash
