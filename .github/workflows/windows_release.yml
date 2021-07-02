@@ -25,12 +25,14 @@ jobs:
       uses: actions/checkout@master
       
     - name: Set Release env
-      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-    - name: Test
+      id: relver
+      run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+    - name: Check output
+      env:
+        RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
       run: |
         echo $RELEASE_VERSION
-        echo ${{ env.RELEASE_VERSION }}
-      shell: bash
+        echo ${{ steps.vars.outputs.tag }}
           
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
@@ -54,6 +56,6 @@ jobs:
       run: cmake --build . --config $BUILD_TYPE
     - uses: actions/upload-artifact@v2
       with:
-       name: windows-binaries-${{ steps.tag.outputs.SOURCE_TAG }}
+       name: windows-binaries-${{ steps.relver.outputs.tag }}
        path: ${{runner.workspace}}/build/Release/fs.exe
        if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
