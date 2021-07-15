@@ -13,4 +13,4 @@ set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(fs fs.cpp)
+add_executable(fs fs.cpp fs_argparse.hpp fs_details.hpp fs_term.hpp fs_utils.hpp)

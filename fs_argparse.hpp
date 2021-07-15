@@ -13,7 +13,7 @@
 #include <functional>
 #include <filesystem>
 
-namespace argparse
+namespace fs::argparse
 {
     namespace string_utils
     {
