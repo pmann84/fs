@@ -7,10 +7,9 @@
 
 namespace fs
 {
-    void output_path_permissions(const std::filesystem::path& path)
+    void output_path_permissions(const std::filesystem::path& path, bool is_directory)
     {
         auto p = std::filesystem::status(path).permissions();
-        bool is_directory = std::filesystem::is_directory(path);
         std::string dir_marker = is_directory ? "d" : "-";
         if (is_directory)
         {
@@ -70,9 +69,9 @@ namespace fs
 //    Tabular data: csv, tsv, ...
 
 
-    void print_filename(const std::filesystem::directory_entry& entry)
+    void print_filename(const std::filesystem::directory_entry& entry, bool is_directory)
     {
-        if (std::filesystem::is_directory(entry.path()))
+        if (is_directory)
         {
             std::cout << tc::fg::blue;
         }
@@ -94,13 +93,14 @@ namespace fs
 
     void print_directory_entry(const std::filesystem::directory_entry& entry, std::map<std::string, uintmax_t> columns)
     {
-        output_path_permissions(entry.path());
+        bool is_directory = std::filesystem::is_directory(entry.path());
+        output_path_permissions(entry.path(), is_directory);
 
         std::cout << "  " << fs::file_time_to_string(entry.last_write_time()) << "  ";
         // Size in bytes
         std::cout << std::setw(columns["Size"]) << entry.file_size() << "   ";
 
-        print_filename(entry);
+        print_filename(entry, is_directory);
         std::cout << std::endl;
     }
 
