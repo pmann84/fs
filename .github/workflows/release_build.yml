@@ -2,10 +2,11 @@
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
 name: Release Build
 
-on:
-  push:
-    tags:
-      - v*
+on: workflow_dispatch
+# on:
+#   push:
+#     tags:
+#       - v*
 
 permissions:
   contents: write
