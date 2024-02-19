@@ -1,5 +1,4 @@
-#ifndef FSPP_FS_DETAILS_HPP
-#define FSPP_FS_DETAILS_HPP
+#pragma once
 
 #include <vector>
 #include <filesystem>
@@ -24,5 +23,3 @@ namespace fs
         }
     };
 }
-
-#endif //FSPP_FS_DETAILS_HPP

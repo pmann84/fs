@@ -4,12 +4,13 @@
 #include <chrono>
 #include <cstdint>
 #include <filesystem>
+#include <sstream>
 
 namespace fs
 {
-    inline uintmax_t get_num_digits (uintmax_t i)
+    inline uintmax_t get_num_digits(uintmax_t i)
     {
-        return i > 0 ? (uintmax_t) log10 ((double) i) + 1 : 1;
+        return i > 0 ? (uintmax_t)log10((double)i) + 1 : 1;
     }
 
     inline std::string file_time_to_string(std::filesystem::file_time_type file_time)
@@ -18,10 +19,10 @@ namespace fs
         std::time_t tt = std::chrono::system_clock::to_time_t(sctp);
         std::tm *gmt = std::gmtime(&tt);
         std::stringstream buffer;
-        buffer << std::put_time(gmt,"%Y-%m-%d %H:%M");
+        buffer << std::put_time(gmt, "%Y-%m-%d %H:%M");
         std::string formatted_file_time = buffer.str();
         return formatted_file_time;
     }
 }
 
-#endif //FSPP_FS_UTILS_HPP
+#endif // FSPP_FS_UTILS_HPP

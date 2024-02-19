@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(
-        fspp
+        fs
         VERSION 1.0
         DESCRIPTION "Cross platform file listing program. Based on linux ls."
         LANGUAGES CXX
@@ -13,4 +13,5 @@ set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(fs fs.cpp fs_argparse.hpp fs_details.hpp fs_term.hpp fs_utils.hpp)
+add_subdirectory(vendor/sage)
+add_subdirectory(fs)
