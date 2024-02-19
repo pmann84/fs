@@ -15,5 +15,5 @@ Optional Arguments:
 ```
 
 ## Binaries
-[![Latest Binaries - Windows](https://github.com/pmann84/fs/actions/workflows/windows_latest.yml/badge.svg)](https://github.com/pmann84/fs/actions/workflows/windows_latest.yml)
-[![Release Binaries - Windows](https://github.com/pmann84/fs/actions/workflows/windows_release.yml/badge.svg)](https://github.com/pmann84/fs/actions/workflows/windows_release.yml)
+[![Continuous Build](https://github.com/pmann84/fs/actions/workflows/windows_latest.yml/badge.svg)](https://github.com/pmann84/fs/actions/workflows/continuous_build.yml)
+[![Release Build](https://github.com/pmann84/fs/actions/workflows/windows_release.yml/badge.svg)](https://github.com/pmann84/fs/actions/workflows/release_build.yml)
