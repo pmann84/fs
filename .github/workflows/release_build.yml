@@ -27,12 +27,6 @@ jobs:
         run: |
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-      - name: Set Release environment
-        id: relver
-        #run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-        run: echo ::set-output name=tag::v1.0.1
-        shell: bash
-
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
@@ -69,12 +63,6 @@ jobs:
         shell: bash
         run: |
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
-      - name: Set Release environment
-        id: relver
-        #run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-        run: echo ::set-output name=tag::v1.0.1
-        shell: bash
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -121,26 +109,25 @@ jobs:
           name: fs-binary-windows
           path: fs-binary-windows
 
+      - name: Rename outputs
+        run: |
+          mv fs-binary-windows/fs.exe cli-binary-windows/fs-windows--${{ steps.relver.outputs.tag }}.exe
+# mv cli-binary-linux/XX cli-binary-linux/XX--${{ steps.relver.outputs.tag }}-linux-x86_64
+
       - name: Debug output
         run: |
           dir
           dir fs-binary-windows
-
-#      - run: |
-#          mv cli-binary-linux/XX cli-binary-linux/XX-${{ steps.get_version.outputs.VERSION }}-linux-x86_64
-#          mv cli-binary-linux/XXXX cli-binary-linux/XXXX-${{ steps.get_version.outputs.VERSION }}-linux-x86_64
-#          mv cli-binary-windows/XX.exe cli-binary-windows/XX-${{ steps.get_version.outputs.VERSION }}-windows-x86_64.exe
-#          mv cli-binary-windows/XXXX.exe cli-binary-windows/XXXX-${{ steps.get_version.outputs.VERSION }}-windows-x86_64.exe
-
-#      - name: Create Release
-#        uses: softprops/action-gh-release@v1
-#        # if: startsWith(github.ref, 'refs/tags/')
-#        with:
-#          tag_name: ${{ steps.relver.outputs.tag }}
-#          name: ${{ steps.relver.outputs.tag }}
-#          files: |
-#            fs-binary-windows/*
-# #            fs-binary-linux/*
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        # if: startsWith(github.ref, 'refs/tags/')
+        with:
+          tag_name: ${{ steps.relver.outputs.tag }}
+          name: ${{ steps.relver.outputs.tag }}
+          files: |
+            fs-binary-windows/*
+#             fs-binary-linux/*
 
 
 
