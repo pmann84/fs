@@ -111,7 +111,7 @@ jobs:
 
       - name: Bundle Release Artifacts
         run: |
-          tar -acf windows-${{ steps.relver.outputs.tag }}.zip -C fs-binary-windows fs.exe
+          tar -cvf windows-${{ steps.relver.outputs.tag }}.tar -C fs-binary-windows fs.exe
   # mv fs-binary-windows/fs.exe fs-binary-windows/fs-windows-${{ steps.relver.outputs.tag }}.exe
 # mv cli-binary-linux/XX cli-binary-linux/XX--${{ steps.relver.outputs.tag }}-linux-x86_64
 
