@@ -86,6 +86,7 @@ jobs:
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         #del /f ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip
         run: |
+          dir
           tar.exe -a -c -f ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip fs/fs.exe
 
       - name: Create Release
