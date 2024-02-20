@@ -122,7 +122,9 @@ jobs:
           path: fs-binary-windows
 
       - name: Debug output
-        run: dir
+        run: |
+          dir
+          dir fs-binary-windows
 
 #      - run: |
 #          mv cli-binary-linux/XX cli-binary-linux/XX-${{ steps.get_version.outputs.VERSION }}-linux-x86_64
@@ -138,7 +140,7 @@ jobs:
 #          name: ${{ steps.relver.outputs.tag }}
 #          files: |
 #            fs-binary-windows/*
-##            fs-binary-linux/*
+# #            fs-binary-linux/*
 
 
 
