@@ -111,7 +111,7 @@ jobs:
 
       - name: Rename outputs
         run: |
-          mv fs-binary-windows/fs.exe cli-binary-windows/fs-windows--${{ steps.relver.outputs.tag }}.exe
+          mv fs-binary-windows/fs.exe fs-binary-windows/fs-windows-${{ steps.relver.outputs.tag }}.exe
 # mv cli-binary-linux/XX cli-binary-linux/XX--${{ steps.relver.outputs.tag }}-linux-x86_64
 
       - name: Debug output
@@ -126,7 +126,7 @@ jobs:
           tag_name: ${{ steps.relver.outputs.tag }}
           name: ${{ steps.relver.outputs.tag }}
           files: |
-            fs-binary-windows/*
+            fs-binary-windows/fs-windows-${{ steps.relver.outputs.tag }}.exe
 #             fs-binary-linux/*
 
 
