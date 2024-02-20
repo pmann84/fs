@@ -64,7 +64,8 @@ jobs:
 
       - name: Set Release environment
         id: relver
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+        #run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+        run: echo ::set-output name=tag::1.0.1
         shell: bash
 
       - name: Configure CMake
