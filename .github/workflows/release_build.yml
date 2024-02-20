@@ -49,9 +49,10 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
+          working-directory: ${{ steps.strings.outputs.build-output-dir }}/fs/Release
           name: fs-binary-windows
           path: |
-            fs/Release/fs.exe
+            fs.exe
 
   linux-build:
     runs-on: ubuntu-latest
@@ -91,8 +92,9 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: fs-binary-linux
+          working-directory: ${{ steps.strings.outputs.build-output-dir }}/fs/Release
           path: |
-            fs/Release/fs.exe
+            fs.exe
             
             
 
