@@ -109,9 +109,10 @@ jobs:
           name: fs-binary-windows
           path: fs-binary-windows
 
-      - name: Rename outputs
+      - name: Bundle Release Artifacts
         run: |
-          mv fs-binary-windows/fs.exe fs-binary-windows/fs-windows-${{ steps.relver.outputs.tag }}.exe
+          tar.exe -a -c -f windows-${{ steps.relver.outputs.tag }}.zip -C fs-binary-windows fs.exe
+  # mv fs-binary-windows/fs.exe fs-binary-windows/fs-windows-${{ steps.relver.outputs.tag }}.exe
 # mv cli-binary-linux/XX cli-binary-linux/XX--${{ steps.relver.outputs.tag }}-linux-x86_64
 
       - name: Debug output
@@ -126,7 +127,7 @@ jobs:
           tag_name: ${{ steps.relver.outputs.tag }}
           name: ${{ steps.relver.outputs.tag }}
           files: |
-            fs-binary-windows/fs-windows-${{ steps.relver.outputs.tag }}.exe
+            windows-${{ steps.relver.outputs.tag }}.zip
 #             fs-binary-linux/*
 
 
