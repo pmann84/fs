@@ -85,7 +85,7 @@ jobs:
       - name: Create Tarball
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: |
-          rm -rf ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip
+          del /f ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip
           tar.exe -a -c -f ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip ./**/fs.exe
 
       - name: Create Release
