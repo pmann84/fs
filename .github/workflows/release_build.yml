@@ -127,7 +127,7 @@ jobs:
           tag_name: ${{ steps.relver.outputs.tag }}
           name: ${{ steps.relver.outputs.tag }}
           files: |
-            windows-${{ steps.relver.outputs.tag }}.zip
+            windows-${{ steps.relver.outputs.tag }}.tar
 #             fs-binary-linux/*
 
 
