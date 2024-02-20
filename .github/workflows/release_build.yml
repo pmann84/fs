@@ -90,7 +90,7 @@ jobs:
           tag_name: ${{ steps.relver.outputs.tag }}
           name: ${{ steps.relver.outputs.tag }}
           files: |
-            ${{ steps.create_release.outputs.upload_url }}
+             ${{ steps.strings.outputs.build-output-dir }}
 
 
       # - name: Create Release
