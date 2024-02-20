@@ -12,43 +12,8 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
-      fail-fast: false
-
-      # Set up a matrix to run the following 3 configurations:
-      # 1. <Windows, Release, latest MSVC compiler toolchain on the default runner image, default generator>
-      # 2. <Linux, Release, latest GCC compiler toolchain on the default runner image, default generator>
-      # 3. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
-      #
-      # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        build_type: [Release]
-        c_compiler: [gcc, clang, cl]
-        include:
-          - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
-          # - os: ubuntu-latest
-          #   c_compiler: gcc
-          #   cpp_compiler: g++
-        exclude:
-          - os: windows-latest
-            c_compiler: gcc
-          - os: windows-latest
-            c_compiler: clang
-          - os: ubuntu-latest
-            c_compiler: cl
-          - os: ubuntu-latest
-            c_compiler: clang
-          - os: ubuntu-latest
-            c_compiler: gcc
-            #cpp_compiler: g++
-
+  windows-build:
+    runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -65,7 +30,7 @@ jobs:
       - name: Set Release environment
         id: relver
         #run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-        run: echo ::set-output name=tag::1.0.1
+        run: echo ::set-output name=tag::v1.0.1
         shell: bash
 
       - name: Configure CMake
@@ -73,21 +38,91 @@ jobs:
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
         run: >
           cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_CXX_COMPILER=cl
+          -DCMAKE_C_COMPILER=cl
+          -DCMAKE_BUILD_TYPE=Release
           -S ${{ github.workspace }}
 
-      - name: Build
+      - name: Build Release
         # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
 
-      - name: Create Tarball
-        working-directory: ${{ steps.strings.outputs.build-output-dir }}
-        #del /f ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: fs-binary-windows
+          path: |
+            fs/Release/fs.exe
+
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+
+      - name: Set reusable strings
+        # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+        id: strings
+        shell: bash
         run: |
-          tar.exe -a -c -f ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip -C fs/Release fs.exe
-          dir
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Set Release environment
+        id: relver
+        #run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+        run: echo ::set-output name=tag::v1.0.1
+        shell: bash
+
+      - name: Configure CMake
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+        run: >
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}
+          -DCMAKE_CXX_COMPILER=g++
+          -DCMAKE_C_COMPILER=gcc
+          -DCMAKE_BUILD_TYPE=Release
+          -S ${{ github.workspace }}
+
+      - name: Build Release
+        # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: fs-binary-linux
+          path: |
+            fs/Release/fs.exe
+            
+            
+
+  release:
+    needs: [windows-build, linux-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Release environment
+        id: relver
+        #run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+        run: echo ::set-output name=tag::v1.0.1
+        shell: bash
+
+      - name: Download Linux Binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: fs-binary-linux
+          path: fs-binary-linux
+
+      - name: Download Windows Binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: fs-binary-windows
+          path: fs-binary-windows
+
+#      - run: |
+#          mv cli-binary-linux/XX cli-binary-linux/XX-${{ steps.get_version.outputs.VERSION }}-linux-x86_64
+#          mv cli-binary-linux/XXXX cli-binary-linux/XXXX-${{ steps.get_version.outputs.VERSION }}-linux-x86_64
+#          mv cli-binary-windows/XX.exe cli-binary-windows/XX-${{ steps.get_version.outputs.VERSION }}-windows-x86_64.exe
+#          mv cli-binary-windows/XXXX.exe cli-binary-windows/XXXX-${{ steps.get_version.outputs.VERSION }}-windows-x86_64.exe
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -95,43 +130,102 @@ jobs:
         with:
           tag_name: ${{ steps.relver.outputs.tag }}
           name: ${{ steps.relver.outputs.tag }}
-          files: ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip
+          files: |
+            fs-binary-linux/*
+            fs-binary-windows/*
 
+#      - name: Release
+#        uses: softprops/action-gh-release@v1
+#        tag_name: ${{ steps.relver.outputs.tag }}
+#        name: ${{ steps.relver.outputs.tag }}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          files: |
+#            fs-binary-linux/*
+#            fs-binary-windows/*
 
-      # - name: Create Release
-      #   id: create_release
-      #   uses: elgohr/Github-Release-Action@v5
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-      #   with:
-      #     title: Release v${{ steps.relver.outputs.tag }}
-
-
-
-
-        
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     tag_name: ${{ steps.relver.outputs.tag }}
-      #     release_name: ${{ steps.relver.outputs.tag }}
-      #     draft: 'true'
-      #     prerelease: 'false'
-
-      # - name: Upload Artifacts
-      #   uses: actions/upload-release-asset@v1.0.1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: ./${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip
-      #     asset_name: ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip
-      #     asset_content_type: application/zip
-
-      # - name: Publish Release
-      #   uses: eregon/publish-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     release_id: ${{ steps.create_release.outputs.id }}
+#  build:
+#    runs-on: ${{ matrix.os }}
+#
+#    strategy:
+#      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+#      fail-fast: false
+#
+#      # Set up a matrix to run the following 3 configurations:
+#      # 1. <Windows, Release, latest MSVC compiler toolchain on the default runner image, default generator>
+#      # 2. <Linux, Release, latest GCC compiler toolchain on the default runner image, default generator>
+#      # 3. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
+#      #
+#      # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
+#      matrix:
+#        os: [ubuntu-latest, windows-latest]
+#        build_type: [Release]
+#        c_compiler: [gcc, clang, cl]
+#        include:
+#          - os: windows-latest
+#            c_compiler: cl
+#            cpp_compiler: cl
+#          # - os: ubuntu-latest
+#          #   c_compiler: gcc
+#          #   cpp_compiler: g++
+#        exclude:
+#          - os: windows-latest
+#            c_compiler: gcc
+#          - os: windows-latest
+#            c_compiler: clang
+#          - os: ubuntu-latest
+#            c_compiler: cl
+#          - os: ubuntu-latest
+#            c_compiler: clang
+#          - os: ubuntu-latest
+#            c_compiler: gcc
+#            #cpp_compiler: g++
+#
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#        with:
+#          submodules: 'true'
+#
+#      - name: Set reusable strings
+#        # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+#        id: strings
+#        shell: bash
+#        run: |
+#          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+#
+#      - name: Set Release environment
+#        id: relver
+#        #run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+#        run: echo ::set-output name=tag::1.0.1
+#        shell: bash
+#
+#      - name: Configure CMake
+#        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+#        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+#        run: >
+#          cmake -B ${{ steps.strings.outputs.build-output-dir }}
+#          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+#          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+#          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+#          -S ${{ github.workspace }}
+#
+#      - name: Build
+#        # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+#        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+#
+#      - name: Create Tarball
+#        working-directory: ${{ steps.strings.outputs.build-output-dir }}
+#        #del /f ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip
+#        run: |
+#          tar.exe -a -c -f ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip -C fs/Release fs.exe
+#          dir
+#
+#      - name: Create Release
+#        uses: softprops/action-gh-release@v1
+#        # if: startsWith(github.ref, 'refs/tags/')
+#        with:
+#          tag_name: ${{ steps.relver.outputs.tag }}
+#          name: ${{ steps.relver.outputs.tag }}
+#          files: ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip
