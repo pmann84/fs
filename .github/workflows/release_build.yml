@@ -86,8 +86,8 @@ jobs:
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         #del /f ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip
         run: |
-          dir fs/Release
           tar.exe -a -c -f ${{ matrix.os }}-binaries-${{ steps.relver.outputs.tag }}.zip -C fs/Release fs.exe
+          dir fs/Release
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
