@@ -2,11 +2,10 @@
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
 name: Release Build
 
-on: workflow_dispatch
-# on:
-#   push:
-#     tags:
-#       - v*
+on:
+  push:
+    tags:
+      - v*
 
 permissions:
   contents: write
@@ -41,7 +40,6 @@ jobs:
         # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
         run: |
           cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
-          dir ${{ steps.strings.outputs.build-output-dir }}
 
       - uses: actions/upload-artifact@v2
         with:
@@ -93,8 +91,7 @@ jobs:
     steps:
       - name: Set Release environment
         id: relver
-        #run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-        run: echo ::set-output name=tag::v1.0.1
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
         shell: bash
 
 #      - name: Download Linux Binaries
