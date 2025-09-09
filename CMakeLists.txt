@@ -7,10 +7,9 @@ project(
         LANGUAGES CXX
 )
 
-# Disable the ZERO_CHECK project generation
 set(CMAKE_SUPPRESS_REGENERATION true)
-
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" FORCE)
+set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_subdirectory(vendor/sage)

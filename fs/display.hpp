@@ -7,10 +7,11 @@
 #include <map>
 #include <iostream>
 #include <filesystem>
+#include <algorithm>
 
 namespace fs
 {
-    void output_path_permissions(const std::filesystem::path &path, bool is_directory)
+    inline void output_path_permissions(const std::filesystem::path &path, bool is_directory)
     {
         auto p = std::filesystem::status(path).permissions();
         std::string dir_marker = is_directory ? "d" : "-";
@@ -30,18 +31,18 @@ namespace fs
                   << ((p & std::filesystem::perms::others_exec) != std::filesystem::perms::none ? "x" : "-");
     }
 
-    bool is_file_extension_in_list(const std::filesystem::directory_entry &entry, const std::vector<std::string> &valid_extensions)
+    inline bool is_file_extension_in_list(const std::filesystem::directory_entry &entry, const std::vector<std::string> &valid_extensions)
     {
         return std::find(valid_extensions.begin(), valid_extensions.end(), entry.path().extension()) != valid_extensions.end();
     }
 
-    bool is_binary_file(const std::filesystem::directory_entry &entry)
+    inline bool is_binary_file(const std::filesystem::directory_entry &entry)
     {
         std::vector<std::string> binary_extensions = {".exe", ".so", ".dll", ".class", ".obj", ".pyc"};
         return is_file_extension_in_list(entry, binary_extensions);
     }
 
-    bool is_source_file(const std::filesystem::directory_entry &entry)
+    inline bool is_source_file(const std::filesystem::directory_entry &entry)
     {
         std::vector<std::string> source_extensions = {
             ".cpp", ".c", ".hpp", ".h",
@@ -52,7 +53,7 @@ namespace fs
         return is_file_extension_in_list(entry, source_extensions);
     }
 
-    bool is_image_file(const std::filesystem::directory_entry &entry)
+    inline bool is_image_file(const std::filesystem::directory_entry &entry)
     {
         std::vector<std::string> image_extensions = {
             ".jpg", ".jpeg", ".png", ".gif",
@@ -71,7 +72,7 @@ namespace fs
     //    Configuration: ini, cfg, rc, reg, ...
     //    Tabular data: csv, tsv, ...
 
-    void print_filename(const std::filesystem::directory_entry &entry, bool is_directory)
+    inline void print_filename(const std::filesystem::directory_entry &entry, bool is_directory)
     {
         if (is_directory)
         {
@@ -93,20 +94,21 @@ namespace fs
         std::cout << sage::term::reset;
     }
 
-    void print_directory_entry(const std::filesystem::directory_entry &entry, std::map<std::string, uintmax_t> columns)
+    inline void print_directory_entry(const std::filesystem::directory_entry &entry, std::map<std::string, uintmax_t> columns)
     {
         bool is_directory = std::filesystem::is_directory(entry.path());
         output_path_permissions(entry.path(), is_directory);
 
-        std::cout << "  " << fs::file_time_to_string(entry.last_write_time()) << "  ";
+        std::cout << "  " << file_time_to_string(entry.last_write_time()) << "  ";
         // Size in bytes
-        std::cout << std::setw(columns["Size"]) << entry.file_size() << "   ";
+        const auto file_size = std::filesystem::is_directory(entry) ? 0 : entry.file_size();
+        std::cout << std::setw(columns["Size"]) << file_size << "   ";
 
         print_filename(entry, is_directory);
         std::cout << std::endl;
     }
 
-    void print_column_headers(std::map<std::string, uintmax_t> columns)
+    inline void print_column_headers(std::map<std::string, uintmax_t> columns)
     {
         std::cout << sage::term::underline << std::setw(columns["Permissions"]) << "Permissions" << sage::term::reset;
         std::cout << "  " << sage::term::underline << std::setw(columns["Last Write"]) << "Last Write" << sage::term::reset;
@@ -115,7 +117,7 @@ namespace fs
         std::cout << std::endl;
     }
 
-    void output_directory_header(const std::filesystem::path &path)
+    inline void output_directory_header(const std::filesystem::path &path)
     {
         std::cout << sage::term::inverse << std::filesystem::absolute(path).string();
         if (path == "." || path == "..")

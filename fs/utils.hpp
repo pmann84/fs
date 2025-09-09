@@ -2,6 +2,7 @@
 #define FSPP_FS_UTILS_HPP
 
 #include <chrono>
+#include <cmath>
 #include <cstdint>
 #include <filesystem>
 #include <sstream>
@@ -10,7 +11,7 @@ namespace fs
 {
     inline uintmax_t get_num_digits(uintmax_t i)
     {
-        return i > 0 ? (uintmax_t)log10((double)i) + 1 : 1;
+        return i > 0 ? (uintmax_t) std::log10(static_cast<double>(i)) + 1 : 1;
     }
 
     inline std::string file_time_to_string(std::filesystem::file_time_type file_time)

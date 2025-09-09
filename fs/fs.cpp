@@ -7,17 +7,14 @@
 
 #include <map>
 
-// lspp  // Lists current directory
-// lspp ..  // Lists specified directory
-// lspp .. . // Lists all specified directories
-
 sage::argparse::argument_parser setup_and_parse_args(int argc, char *argv[])
 {
-    auto parser = sage::argparse::argument_parser("lspp arguments", "");
+    auto parser = sage::argparse::argument_parser("fs arguments", "");
     parser.add_argument("path")
         .num_args("*")
         .default_value<std::string>(".")
         .help("Path(s) to list.");
+    parser.add_argument({"-f", "--filter"}).help("Filter the output based on a string pattern.");
     parser.parse_args(argc, argv);
     return parser;
 }
@@ -42,8 +39,8 @@ int main(int argc, char *argv[])
         fs::list_details result;
         result.path = std::filesystem::path(input_path);
 
-        // Check if input_path exists and if its a directory
-        // Only get directory details if its actually a directory
+        // Check if input_path exists and if it's a directory
+        // Only get directory details if it's actually a directory
         // Deal with file displays in the output pass
         if (std::filesystem::exists(input_path) && std::filesystem::is_directory(input_path))
         {
@@ -55,7 +52,7 @@ int main(int argc, char *argv[])
                 result.add_entry(entry);
 
                 // Now we need to calculate the column lengths
-                auto num_file_size_digits = fs::get_num_digits(entry.file_size());
+                auto num_file_size_digits = std::filesystem::is_directory(entry) ? 1 : fs::get_num_digits(entry.file_size());
                 if (num_file_size_digits > columns["Size"])
                 {
                     columns["Size"] = num_file_size_digits;

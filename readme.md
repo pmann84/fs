@@ -32,6 +32,18 @@ ___________  ________________  ____   ____
  drwxrwxrwx  2024-02-20 09:22     0   vendor
 ```
 
+## Common Examples
+`fs` - Lists current directory
+`fs ..` - Lists specified directory
+`fs .. .` - Lists all specified directories
+
 ## Binaries
 [![Continuous Build](https://github.com/pmann84/fs/actions/workflows/continuous_build.yml/badge.svg)](https://github.com/pmann84/fs/actions/workflows/continuous_build.yml)
 [![Release Build](https://github.com/pmann84/fs/actions/workflows/release_build.yml/badge.svg)](https://github.com/pmann84/fs/actions/workflows/release_build.yml)
+
+## Development
+### Submodules
+You can update the submodules with the following command:
+```
+git submodule update --recursive --remote
+```
