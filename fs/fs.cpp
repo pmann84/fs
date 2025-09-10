@@ -6,6 +6,7 @@
 #include <sage/term/colours.hpp>
 
 #include <map>
+#include <print>
 
 sage::argparse::argument_parser setup_and_parse_args(int argc, char *argv[])
 {
@@ -14,7 +15,7 @@ sage::argparse::argument_parser setup_and_parse_args(int argc, char *argv[])
         .num_args("*")
         .default_value<std::string>(".")
         .help("Path(s) to list.");
-    parser.add_argument({"-f", "--filter"}).help("Filter the output based on a string pattern.");
+    parser.add_argument({"-f", "--filter"}).num_args("*").help("Filter the output based on a string pattern.");
     parser.parse_args(argc, argv);
     return parser;
 }
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
 {
     auto parser = setup_and_parse_args(argc, argv);
     auto input_paths = parser.get<std::vector<std::string>>("path");
+    auto filters = parser.get<std::vector<std::string>>("filter");
 
     std::map<std::string, uintmax_t> columns = {
         {"Permissions", 11},
@@ -47,6 +49,10 @@ int main(int argc, char *argv[])
             // Iterate everything in the specified directory
             for (const auto &entry : std::filesystem::directory_iterator(input_path))
             {
+                if (!fs::does_entry_match_filters(entry, filters))
+                {
+                    continue;
+                }
                 // Add the entry to the results for display
                 // on the next pass
                 result.add_entry(entry);
@@ -78,7 +84,7 @@ int main(int argc, char *argv[])
 
         if (std::filesystem::exists(dir.path))
         {
-            if (dir.entries.empty() && !is_directory(dir.path))
+            if (dir.entries.empty() && !std::filesystem::is_directory(dir.path))
             {
                 // TODO: Print some file stats - replace print_directory_entry with something else
                 std::filesystem::directory_entry entry(dir.path);

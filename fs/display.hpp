@@ -9,6 +9,8 @@
 #include <filesystem>
 #include <algorithm>
 
+#include "sage/argparse/argparse.hpp"
+
 namespace fs
 {
     inline void output_path_permissions(const std::filesystem::path &path, bool is_directory)
@@ -125,5 +127,12 @@ namespace fs
             std::cout << " (" << path.string() << ")";
         }
         std::cout << ":" << sage::term::reset << std::endl;
+    }
+
+    inline bool does_entry_match_filters(const std::filesystem::directory_entry& entry, const std::vector<std::string>& filters) {
+        if (filters.empty()) return true;
+        return std::ranges::any_of(filters, [&entry](const auto& filter) {
+            return entry.path().string().contains(filter);
+        });
     }
 }

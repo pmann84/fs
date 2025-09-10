@@ -5,13 +5,14 @@ This is a clone of the `ls` tool in Linux, written in C++. There is no reason to
 
 ## Usage
 ```
-Usage: lspp arguments [--help] [path [PATH ...]]
+Usage: fs arguments [--help] [--filter [FILTER ...]] [path [PATH ...]] 
 
-Positional Arguments:
+Positional Arguments: 
 path: Path(s) to list.
 
-Optional Arguments:
+Optional Arguments: 
 -h, --help: Show this help message and exit.
+-f, --filter: Filter the output based on a string pattern.
 ```
 
 Example output:
@@ -33,9 +34,10 @@ ___________  ________________  ____   ____
 ```
 
 ## Common Examples
-`fs` - Lists current directory
-`fs ..` - Lists specified directory
-`fs .. .` - Lists all specified directories
+- `fs` - Lists current directory
+- `fs ..` - Lists specified directory
+- `fs .. .` - Lists all specified directories
+- `fs --filter cmake` - Lists current directory filtering for 'cmake'
 
 ## Binaries
 [![Continuous Build](https://github.com/pmann84/fs/actions/workflows/continuous_build.yml/badge.svg)](https://github.com/pmann84/fs/actions/workflows/continuous_build.yml)
