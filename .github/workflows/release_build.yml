@@ -88,6 +88,7 @@ jobs:
         with:
           name: fs-binary-linux
           working-directory: ${{ steps.strings.outputs.build-output-dir }}
+          # TODO: This path is not correct
           path: |
             fs/Release/fs.exe
             

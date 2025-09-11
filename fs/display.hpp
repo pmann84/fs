@@ -125,7 +125,7 @@ namespace fs
         std::cout << sage::term::inverse;
         if (path == "." || path == "..")
         {
-            std::print("({}):", path.string());
+            std::print("{} ({}):", std::filesystem::absolute(path).string(), path.string());
         } else {
             std::print("{}:", std::filesystem::absolute(path).string());
         }
