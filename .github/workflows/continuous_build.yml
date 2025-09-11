@@ -44,6 +44,7 @@ jobs:
           -DCMAKE_CXX_COMPILER=cl
           -DCMAKE_C_COMPILER=cl
           -DCMAKE_BUILD_TYPE=Release
+          --no-warn-unused-cli
           -S ${{ github.workspace }}
 
       - name: Build Release
