@@ -8,6 +8,7 @@
 #include <iostream>
 #include <filesystem>
 #include <algorithm>
+#include <print>
 
 #include "sage/argparse/argparse.hpp"
 
@@ -121,12 +122,14 @@ namespace fs
 
     inline void output_directory_header(const std::filesystem::path &path)
     {
-        std::cout << sage::term::inverse << std::filesystem::absolute(path).string();
+        std::cout << sage::term::inverse;
         if (path == "." || path == "..")
         {
-            std::cout << " (" << path.string() << ")";
+            std::print("({}):", path.string());
+        } else {
+            std::print("{}:", std::filesystem::absolute(path).string());
         }
-        std::cout << ":" << sage::term::reset << std::endl;
+        std::cout << sage::term::reset << std::endl;
     }
 
     inline bool does_entry_match_filters(const std::filesystem::directory_entry& entry, const std::vector<std::string>& filters) {
